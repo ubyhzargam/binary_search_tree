@@ -36,6 +36,64 @@ struct Node *RecursiveSearch(Node *t,int key)
         return RecursiveSearch(t->rchild,key);
 }
 
+int Height(struct Node *p)
+{
+    if(p==NULL)
+        return 0;
+    int x,y;
+    x=Height(p->lchild);
+    y=Height(p->rchild);
+    return x>y?x+1:y+1;
+}
+
+struct Node *Inpre(struct Node *p)
+{
+    while(p!=NULL&&p->rchild!=NULL)
+        p=p->rchild;
+    return p;
+}
+
+struct Node *InSucc(struct Node *p)
+{
+    while(p!=NULL&&p->lchild!=NULL)
+        p=p->lchild;
+    return p;
+}
+
+struct Node *Delete(struct Node *p, int key)
+{
+    struct Node *q;
+    if(p==NULL)
+        return NULL;
+    if(p->lchild==NULL&&p->rchild==NULL&&p->data==key)
+    {
+        if(p==root)
+            root=NULL;
+        free(p);
+        return NULL;
+    }
+    if(key<p->data)
+        p->lchild=Delete(p->lchild,key);
+    else if(key>p->data)
+        p->rchild=Delete(p->rchild,key);
+    else
+    {
+        if(Height(p->lchild)>Height(p->rchild))
+        {
+            q=Inpre(p->lchild);
+            p->data=q->data;
+            p->lchild=Delete(p->lchild,q->data);
+        }
+        else
+        {
+            q=InSucc(p->rchild);
+            p->data=q->data;
+            p->rchild=Delete(p->rchild,q->data);
+        }
+    }
+    return p;
+}
+
 void Insert(int key)
 {
     struct Node *p;
@@ -99,11 +157,12 @@ void Inorder(struct Node *p)
 int main()
 {
     int key;
-    root=RecursiveInsert(root,10);
-    RecursiveInsert(root,5);
+    root=RecursiveInsert(root,50);
+    RecursiveInsert(root,10);
+    RecursiveInsert(root,40);
     RecursiveInsert(root,20);
-    RecursiveInsert(root,8);
     RecursiveInsert(root,30);
+    Delete(root,30);
     Inorder(root);cout<<endl;
     cout<<"Enter the element you want to search in the tree using Iterative method : "<<endl;
     cin>>key;
